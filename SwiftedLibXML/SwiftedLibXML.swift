@@ -85,18 +85,13 @@ class XmlNameSpace {
     private var namesapce: xmlNsPtr = nil
 }
 
-class XmlAttribute : CustomStringConvertible {
+class XmlAttribute {
     private var attribute: xmlAttrPtr = nil
     init ( attribute: xmlAttrPtr) {
         self.attribute = attribute
     }
     deinit{
         //        xmlFreeProp(self.attribute)
-    }
-    var description : String {
-        get {
-            return "type=" + self.type.description + ",name=" + self.name + ",value=" + self.value
-        }
     }
     var name : String {
         get {
@@ -118,6 +113,14 @@ class XmlAttribute : CustomStringConvertible {
     }
     func prev() -> XmlAttribute {
         return XmlAttribute(attribute: self.attribute.memory.prev)
+    }
+}
+
+extension XmlAttribute : CustomStringConvertible {
+    var description : String {
+        get {
+            return "type=" + self.type.description + ",name=" + self.name + ",value=" + self.value
+        }
     }
 }
 
@@ -209,14 +212,8 @@ extension xmlElementType : CustomStringConvertible
     }
 }
 
-class XmlNode : CustomStringConvertible {
+class XmlNode {
     private var node : xmlNodePtr = nil
-    
-    var description : String {
-        get {
-            return "name=" + self.name + " elementType=" + self.elementType.description
-        }
-    }
     
     init( node: xmlNodePtr){
         self.node = node
@@ -334,6 +331,14 @@ class XmlNode : CustomStringConvertible {
     
     func addChild( child : XmlNode ){
         xmlAddChild(self.node,child.node)
+    }
+}
+
+extension XmlNode : CustomStringConvertible {
+    var description : String {
+        get {
+            return "name=" + self.name + " elementType=" + self.elementType.description
+        }
     }
 }
 
