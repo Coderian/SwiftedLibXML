@@ -8,10 +8,11 @@
 
 import Foundation
 
+// TODO:impliment
 func xmlSchemaValidityError(ctx: UnsafeMutablePointer<Void>, msg: UnsafePointer<Int8> , arguments: CVaListPointer) -> Void {
     
 }
-
+// TODO:Impliment
 func xmlSchemaValidityWarning(context: UnsafeMutablePointer<Void>, msg: UnsafePointer<Int8>, arguments: CVaListPointer) -> Void {
     
 }
@@ -81,6 +82,7 @@ extension String {
     }
 }
 
+// TODO: impliment
 class XmlNameSpace {
     private var namesapce: xmlNsPtr = nil
 }
