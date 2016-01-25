@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		72CC62C81C56174A00AB11ED /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 72CC62C71C56174A00AB11ED /* LICENSE */; };
-		72CC62CA1C56175900AB11ED /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 72CC62C91C56175900AB11ED /* README.md */; };
 		72E7D9361C55B2FA00EF999E /* SwiftedLibXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72E7D92B1C55B2FA00EF999E /* SwiftedLibXML.framework */; };
 		72E7D93B1C55B2FA00EF999E /* SwiftedLibXMLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E7D93A1C55B2FA00EF999E /* SwiftedLibXMLTests.swift */; };
 		72E7D9461C55B31B00EF999E /* libxml2.2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 72E7D9451C55B31B00EF999E /* libxml2.2.tbd */; };
@@ -205,7 +203,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72CC62C81C56174A00AB11ED /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,7 +223,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72CC62CA1C56175900AB11ED /* README.md in Sources */,
 				72E7D94A1C55D95100EF999E /* SwiftedLibXML.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
