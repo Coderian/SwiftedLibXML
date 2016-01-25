@@ -223,6 +223,7 @@ class XmlNode : CustomStringConvertible {
     init( node: xmlNodePtr){
         self.node = node
     }
+    // TODO:impliment
     var namespace : XmlNameSpace {
         get {
             return XmlNameSpace()
