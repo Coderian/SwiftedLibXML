@@ -27,8 +27,8 @@ class SwiftedLibXMLTests: XCTestCase {
         let xmlPath = bundle.pathForResource("test", ofType: "xml")
         let schema:XmlSchema = XmlSchema(path: xsdPath!)
         let xml:XmlDoc = XmlReader.read(xmlPath!)
-        
         XCTAssert(schema.validate(xml))
+        
         let invalidXmlPath = bundle.pathForResource("invalidtest", ofType: "xml")
         let invalidxml:XmlDoc = XmlReader.read(invalidXmlPath!)
         XCTAssert(schema.validate(invalidxml) == false)
@@ -47,6 +47,8 @@ class SwiftedLibXMLTests: XCTestCase {
         print(xml.root.elementType)
         XCTAssertNotNil(xml.root.attributes)
         print(xml.root.attributes)
+        XCTAssertFalse(xml.root.IsBlankNode)
+        XCTAssertFalse(xml.root.IsText)
         var node : XmlNode = xml.root.firstElementChild()
         while node.IsNil == false {
             print(node)

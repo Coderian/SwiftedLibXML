@@ -63,9 +63,7 @@ class XmlSchema {
             if xmlSchemaValidateDoc(self.context, doc.doc) == 0 {
                 return true
             }
-            else {
-                return false
-            }
+            return false
         }
     }
     
