@@ -60,10 +60,7 @@ class XmlSchema {
             xmlSchemaFreeValidCtxt(self.context)
         }
         func validate(doc:XmlDoc) -> Bool {
-            if xmlSchemaValidateDoc(self.context, doc.doc) == 0 {
-                return true
-            }
-            return false
+            return xmlSchemaValidateDoc(self.context, doc.doc) == 0
         }
     }
     
@@ -92,6 +89,11 @@ class XmlAttribute {
     }
     deinit{
         //        xmlFreeProp(self.attribute)
+    }
+    var IsNil:Bool {
+        get {
+            return self.attribute == nil
+        }
     }
     var name : String {
         get {
@@ -224,10 +226,16 @@ class XmlNode {
             return XmlNameSpace()
         }
     }
+    var attribute : XmlAttribute {
+        get {
+            let attr = XmlAttribute(attribute: self.node.memory.properties)
+            return attr
+        }
+    }
     var attributes : [String: String] {
         get {
             var dictonary = [String: String]()
-            var attr = XmlAttribute(attribute: self.node.memory.properties)
+            var attr = attribute
             while attr.attribute != nil {
                 dictonary[attr.name] = attr.value
                 attr = attr.next()
@@ -265,22 +273,12 @@ class XmlNode {
     
     var IsBlankNode:Bool {
         get{
-            if xmlIsBlankNode(self.node) == 1 {
-                return true
-            }
-            else{
-                return false
-            }
+            return xmlIsBlankNode(self.node) == 1
         }
     }
     var IsText: Bool {
         get {
-            if xmlNodeIsText(self.node) == 1 {
-                return true
-            }
-            else {
-                return false
-            }
+            return xmlNodeIsText(self.node) == 1
         }
     }
     var content:String {

@@ -32,24 +32,38 @@ class SwiftedLibXMLTests: XCTestCase {
         let invalidXmlPath = bundle.pathForResource("invalidtest", ofType: "xml")
         let invalidxml:XmlDoc = XmlReader.read(invalidXmlPath!)
         XCTAssert(schema.validate(invalidxml) == false)
+        
+        let kmlXsdPath = bundle.pathForResource("ogckml22", ofType: "xsd")
+        let kmlXmlPath = bundle.pathForResource("KML_Sample", ofType: "kml")
+        let kmlSchema:XmlSchema = XmlSchema()
+        kmlSchema.parse(kmlXsdPath!)
+        let kmlXml:XmlDoc = XmlReader.read(kmlXmlPath!)
+        XCTAssert(kmlSchema.validate(kmlXml))
+        
+        // XmlSchema 使い回しテスト
+        schema.parse(kmlXsdPath!)
+        XCTAssertFalse(schema.validate(xml))
     }
     
     func testXMLNode(){
         let xmlPath = bundle.pathForResource("test", ofType: "xml")
         let xml:XmlDoc = XmlReader.read(xmlPath!)
-        XCTAssertNotNil(xml.root)
+        XCTAssertFalse(xml.root.IsNil)
         print(xml.root)
+
         XCTAssertNotNil(xml.root.name)
         print(xml.root.name)
         XCTAssertNotNil(xml.root.content)
         print(xml.root.content)
         XCTAssertNotNil(xml.root.elementType)
         print(xml.root.elementType)
-        XCTAssertNotNil(xml.root.attributes)
-        print(xml.root.attributes)
+        XCTAssertFalse(xml.root.attribute.IsNil)
+        print(xml.root.attribute)
+        XCTAssert(xml.root.attribute.prev().IsNil)
         XCTAssertFalse(xml.root.IsBlankNode)
         XCTAssertFalse(xml.root.IsText)
         var node : XmlNode = xml.root.firstElementChild()
+        print(node.parent)
         while node.IsNil == false {
             print(node)
             print(node.attributes)
@@ -68,7 +82,11 @@ class SwiftedLibXMLTests: XCTestCase {
         print(xml.root.firstElementChild().firstElementChild().content)
         print(xml.root.children.name)
         print(xml.root.children.content)
-
+        print(xml.root.lastElementChild().name)
+        print(xml.root.children.next().name)
+        print(xml.root.children.next().prev().name)
+        print(xml.root.children.last().IsBlankNode)
+        print(xml.root.children.lastChlid().IsBlankNode)
     }
     
     func testPerformanceExample() {

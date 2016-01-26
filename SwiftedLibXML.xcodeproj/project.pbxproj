@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		729FBCAE1C5707AF00B868D6 /* xAL.xsd in Resources */ = {isa = PBXBuildFile; fileRef = 729FBCAA1C5707AF00B868D6 /* xAL.xsd */; };
+		729FBCAF1C5707AF00B868D6 /* KML_Sample.kml in Resources */ = {isa = PBXBuildFile; fileRef = 729FBCAB1C5707AF00B868D6 /* KML_Sample.kml */; };
+		729FBCB01C5707AF00B868D6 /* atom-author-link.xsd in Resources */ = {isa = PBXBuildFile; fileRef = 729FBCAC1C5707AF00B868D6 /* atom-author-link.xsd */; };
+		729FBCB11C5707AF00B868D6 /* ogckml22.xsd in Resources */ = {isa = PBXBuildFile; fileRef = 729FBCAD1C5707AF00B868D6 /* ogckml22.xsd */; };
 		72E7D9361C55B2FA00EF999E /* SwiftedLibXML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72E7D92B1C55B2FA00EF999E /* SwiftedLibXML.framework */; };
 		72E7D93B1C55B2FA00EF999E /* SwiftedLibXMLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E7D93A1C55B2FA00EF999E /* SwiftedLibXMLTests.swift */; };
 		72E7D9461C55B31B00EF999E /* libxml2.2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 72E7D9451C55B31B00EF999E /* libxml2.2.tbd */; };
@@ -27,6 +31,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		729FBCAA1C5707AF00B868D6 /* xAL.xsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = xAL.xsd; sourceTree = "<group>"; };
+		729FBCAB1C5707AF00B868D6 /* KML_Sample.kml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = KML_Sample.kml; sourceTree = "<group>"; };
+		729FBCAC1C5707AF00B868D6 /* atom-author-link.xsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "atom-author-link.xsd"; sourceTree = "<group>"; };
+		729FBCAD1C5707AF00B868D6 /* ogckml22.xsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ogckml22.xsd; sourceTree = "<group>"; };
 		72CC62C71C56174A00AB11ED /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		72CC62C91C56175900AB11ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		72E7D92B1C55B2FA00EF999E /* SwiftedLibXML.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftedLibXML.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,6 +70,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		729FBCB21C5707CB00B868D6 /* TestData */ = {
+			isa = PBXGroup;
+			children = (
+				72E7D94B1C55DB6E00EF999E /* invalidtest.xml */,
+				72E7D94C1C55DB6E00EF999E /* test.xml */,
+				72E7D94D1C55DB6E00EF999E /* test.xsd */,
+				729FBCAA1C5707AF00B868D6 /* xAL.xsd */,
+				729FBCAB1C5707AF00B868D6 /* KML_Sample.kml */,
+				729FBCAC1C5707AF00B868D6 /* atom-author-link.xsd */,
+				729FBCAD1C5707AF00B868D6 /* ogckml22.xsd */,
+			);
+			name = TestData;
+			sourceTree = "<group>";
+		};
 		72E7D9211C55B2FA00EF999E = {
 			isa = PBXGroup;
 			children = (
@@ -96,11 +118,9 @@
 		72E7D9391C55B2FA00EF999E /* SwiftedLibXMLTests */ = {
 			isa = PBXGroup;
 			children = (
+				729FBCB21C5707CB00B868D6 /* TestData */,
 				72E7D93A1C55B2FA00EF999E /* SwiftedLibXMLTests.swift */,
 				72E7D93C1C55B2FA00EF999E /* Info.plist */,
-				72E7D94B1C55DB6E00EF999E /* invalidtest.xml */,
-				72E7D94C1C55DB6E00EF999E /* test.xml */,
-				72E7D94D1C55DB6E00EF999E /* test.xsd */,
 			);
 			path = SwiftedLibXMLTests;
 			sourceTree = "<group>";
@@ -211,8 +231,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				72E7D94E1C55DB6E00EF999E /* invalidtest.xml in Resources */,
+				729FBCAF1C5707AF00B868D6 /* KML_Sample.kml in Resources */,
+				729FBCAE1C5707AF00B868D6 /* xAL.xsd in Resources */,
+				729FBCB01C5707AF00B868D6 /* atom-author-link.xsd in Resources */,
 				72E7D94F1C55DB6E00EF999E /* test.xml in Resources */,
 				72E7D9501C55DB6E00EF999E /* test.xsd in Resources */,
+				729FBCB11C5707AF00B868D6 /* ogckml22.xsd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
