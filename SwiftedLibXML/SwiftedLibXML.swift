@@ -388,6 +388,10 @@ class XmlSAXParser {
         saxHandler.endElementNs = {(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) in
             XmlSAXParser.OnEndElementNs(ctx, localname: localname, prefix: prefix, uri: uri)
         }
+        // closureかクラス外のfuncでしかできないとのエラーのためclosureからクラス関数を呼ぶようにしている
+        saxHandler.characters = {(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt) in
+            XmlSAXParser.OnCharacters(ctx, ch: ch, len: len)
+        }
     }
     deinit{
         if context != nil {
@@ -450,8 +454,10 @@ class XmlSAXParser {
                             const xmlChar * ch,
                             int len)
     */
-    class func OnCharacters(){
-        
+    class func OnCharacters(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt){
+        let str = String.fromLIBXMLString(ch)
+        let endIndex = str.startIndex.advancedBy(Int(len))
+        print("called OnCharacters: [\(str.substringToIndex(endIndex))] len:\(len)")
     }
 }
 
