@@ -398,15 +398,16 @@ class XmlSAXParser {
     func parse(filepath:String)
     {
         let desc : UnsafeMutablePointer<FILE> = fopen(filepath, "r")
+        if desc == nil {
+            return
+        }
         res = fread(&chars, 1, 4, desc)
         if res >= 0 {
             context = xmlCreatePushParserCtxt(&saxHandler, nil, &chars, CInt(res), filepath)
-            if desc != nil {
-                while feof(desc) == 0 {
-                    res = fread(&chars, Int(sizeof(CChar)), Int(chars.count), desc)
-                    if xmlParseChunk(context, chars, CInt(res), CInt(0)) != 0 {
-                        break
-                    }
+            while feof(desc) == 0 {
+                res = fread(&chars, Int(sizeof(CChar)), Int(chars.count), desc)
+                if xmlParseChunk(context, chars, CInt(res), CInt(0)) != 0 {
+                    break
                 }
             }
         }
