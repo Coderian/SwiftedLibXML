@@ -404,7 +404,7 @@ class XmlSAXParser {
             if desc != nil {
                 while feof(desc) == 0 {
                     res = fread(&chars, Int(sizeof(CChar)), Int(chars.count), desc)
-                    if xmlParseChunk(context, chars, CInt(res), CInt(0)) == 0 {
+                    if xmlParseChunk(context, chars, CInt(res), CInt(0)) != 0 {
                         break
                     }
                 }

@@ -93,6 +93,10 @@ class SwiftedLibXMLTests: XCTestCase {
         let xmlPath = bundle.pathForResource("test", ofType: "xml")
         let parser: XmlSAXParser = XmlSAXParser()
         parser.parse(xmlPath!)
+        print("kml parse...")
+        let kmlparser: XmlSAXParser = XmlSAXParser()
+        let kmlPath = bundle.pathForResource("KML_Sample", ofType: "kml")
+        kmlparser.parse(kmlPath!)
     }
     
     func testPerformanceExample() {
