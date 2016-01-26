@@ -399,16 +399,14 @@ class XmlSAXParser {
     {
         let desc : UnsafeMutablePointer<FILE> = fopen(filepath, "r")
         res = fread(&chars, 1, 4, desc)
-        if res <= 0 {
-            fclose(desc)
-            return
-        }
-        context = xmlCreatePushParserCtxt(&saxHandler, nil, &chars, CInt(res), filepath)
-        if desc != nil {
-            while feof(desc) == 0 {
-                res = fread(&chars, Int(sizeof(CChar)), Int(chars.count), desc)
-                if xmlParseChunk(context, chars, CInt(res), CInt(0)) == 0 {
-                    break
+        if res >= 0 {
+            context = xmlCreatePushParserCtxt(&saxHandler, nil, &chars, CInt(res), filepath)
+            if desc != nil {
+                while feof(desc) == 0 {
+                    res = fread(&chars, Int(sizeof(CChar)), Int(chars.count), desc)
+                    if xmlParseChunk(context, chars, CInt(res), CInt(0)) == 0 {
+                        break
+                    }
                 }
             }
         }
