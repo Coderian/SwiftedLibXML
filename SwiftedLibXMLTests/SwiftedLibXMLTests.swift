@@ -89,6 +89,12 @@ class SwiftedLibXMLTests: XCTestCase {
         print(xml.root.children.lastChlid().IsBlankNode)
     }
     
+    func testSAXParser(){
+        let xmlPath = bundle.pathForResource("test", ofType: "xml")
+        let parser: XmlSAXParser = XmlSAXParser()
+        parser.parse(xmlPath!)
+    }
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measureBlock {

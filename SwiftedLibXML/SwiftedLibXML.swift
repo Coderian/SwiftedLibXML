@@ -365,3 +365,96 @@ class XmlReader {
     }
 }
 
+class XmlSAXParser {
+    private var context:xmlParserCtxtPtr = nil
+    private var saxHandler:xmlSAXHandler = xmlSAXHandler()
+    private var chars   = Array<CChar>(count: Int(BUFSIZ), repeatedValue: 0)
+    private var res:Int = 0
+    init(){
+        saxHandler.initialized = XML_SAX2_MAGIC
+        // closureかクラス外のfuncでしかできないとのエラーのためクラス関数を呼ぶようにしている
+        saxHandler.startElementNs = {(ctx: UnsafeMutablePointer<Void>,
+                                      localname:UnsafePointer<xmlChar>,
+                                      prefix: UnsafePointer<xmlChar>,
+                                      uri: UnsafePointer<xmlChar>,
+                                      nb_namespaces:CInt,
+                                      namespaces:UnsafeMutablePointer<UnsafePointer<xmlChar>>,
+                                      nb_attributes:CInt,
+                                      nb_defaulted:CInt,
+                                      attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>>) in
+            print("called starElementNS Closure: [\(String.fromLIBXMLString(localname))]")
+            XmlSAXParser.OnStartElementNs(ctx, localname: localname, prefix: prefix, uri: uri, nb_namespaces: nb_namespaces, namespaces: namespaces, nb_attributes: nb_attributes, nb_defaulted: nb_defaulted, attributes: attributes)
+        }
+        // closureかクラス外のfuncでしかできないとのエラーのためクラス関数を呼ぶようにしている
+        saxHandler.endElementNs = {(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) in
+            print("called endElementNs Closure: [\(String.fromLIBXMLString(localname))]")
+            XmlSAXParser.OnEndElementNs(ctx, localname: localname, prefix: prefix, uri: uri)
+        }
+    }
+    deinit{
+        if context != nil {
+            xmlFreeParserCtxt(context)
+        }
+    }
+    // 参考 : http://www.xmlsoft.org/examples/parse4.c
+    func parse(filepath:String)
+    {
+        let desc : UnsafeMutablePointer<FILE> = fopen(filepath, "r")
+        res = fread(&chars, 1, 4, desc)
+        if res <= 0 {
+            fclose(desc)
+            return
+        }
+        context = xmlCreatePushParserCtxt(&saxHandler, nil, &chars, CInt(res), filepath)
+        if desc != nil {
+            while feof(desc) == 0 {
+                res = fread(&chars, Int(sizeof(CChar)), Int(chars.count), desc)
+                if xmlParseChunk(context, chars, CInt(res), CInt(0)) == 0 {
+                    break
+                }
+            }
+        }
+        fclose(desc)
+    }
+    /*
+    void xmlSAX2StartElementNs		(void * ctx,
+                            const xmlChar * localname,
+                            const xmlChar * prefix,
+                            const xmlChar * URI,
+                            int nb_namespaces,
+                            const xmlChar ** namespaces,
+                            int nb_attributes,
+                            int nb_defaulted,
+                            const xmlChar ** attributes)
+    */
+    class func OnStartElementNs(ctx: UnsafeMutablePointer<Void>,
+                            localname:UnsafePointer<xmlChar>,
+                            prefix: UnsafePointer<xmlChar>,
+                            uri: UnsafePointer<xmlChar>,
+                            nb_namespaces:CInt,
+                            namespaces:UnsafeMutablePointer<UnsafePointer<xmlChar>>,
+                            nb_attributes:CInt,
+                            nb_defaulted:CInt,
+                            attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>> ) {
+        print("called OnStartElementNs: [\(String.fromLIBXMLString(localname))]")
+        
+    }
+    /*
+    void xmlSAX2EndElementNs		(void * ctx,
+                            const xmlChar * localname,
+                            const xmlChar * prefix,
+                            const xmlChar * URI)
+    */
+    class func OnEndElementNs(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) {
+        print("called OnEndElementNs: [\(String.fromLIBXMLString(localname))]")
+    }
+    /*
+    void xmlSAX2Characters		(void * ctx,
+                            const xmlChar * ch,
+                            int len)
+    */
+    class func OnCharacters(){
+        
+    }
+}
+
