@@ -372,7 +372,7 @@ class XmlSAXParser {
     private var res:Int = 0
     init(){
         saxHandler.initialized = XML_SAX2_MAGIC
-        // closureかクラス外のfuncでしかできないとのエラーのためクラス関数を呼ぶようにしている
+        // closureかクラス外のfuncでしかできないとのエラーのためclosureからクラス関数を呼ぶようにしている
         saxHandler.startElementNs = {(ctx: UnsafeMutablePointer<Void>,
                                       localname:UnsafePointer<xmlChar>,
                                       prefix: UnsafePointer<xmlChar>,
@@ -382,12 +382,10 @@ class XmlSAXParser {
                                       nb_attributes:CInt,
                                       nb_defaulted:CInt,
                                       attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>>) in
-            print("called starElementNS Closure: [\(String.fromLIBXMLString(localname))]")
             XmlSAXParser.OnStartElementNs(ctx, localname: localname, prefix: prefix, uri: uri, nb_namespaces: nb_namespaces, namespaces: namespaces, nb_attributes: nb_attributes, nb_defaulted: nb_defaulted, attributes: attributes)
         }
-        // closureかクラス外のfuncでしかできないとのエラーのためクラス関数を呼ぶようにしている
+        // closureかクラス外のfuncでしかできないとのエラーのためclosureからクラス関数を呼ぶようにしている
         saxHandler.endElementNs = {(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) in
-            print("called endElementNs Closure: [\(String.fromLIBXMLString(localname))]")
             XmlSAXParser.OnEndElementNs(ctx, localname: localname, prefix: prefix, uri: uri)
         }
     }
