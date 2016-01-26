@@ -506,26 +506,3 @@ class XmlSAXParser {
     }
 }
 
-struct CustomXmlSAXHandler : HasSAX2Handler {
-    func OnStartElementNs(ctx: UnsafeMutablePointer<Void>,
-        localname:UnsafePointer<xmlChar>,
-        prefix: UnsafePointer<xmlChar>,
-        uri: UnsafePointer<xmlChar>,
-        nb_namespaces:CInt,
-        namespaces:UnsafeMutablePointer<UnsafePointer<xmlChar>>,
-        nb_attributes:CInt,
-        nb_defaulted:CInt,
-        attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>> ) {
-            print("CustomXMlSAParser called OnStartElementNs: [\(String.fromLIBXMLString(localname))]")
-            
-    }
-    func OnEndElementNs(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) {
-        print("CustomXMlSAParser called OnEndElementNs: [\(String.fromLIBXMLString(localname))]")
-    }
-    func OnCharacters(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt){
-        let str = String.fromLIBXMLString(ch)
-        let endIndex = str.startIndex.advancedBy(Int(len))
-        print("CustomXMlSAParser called OnCharacters: [\(str.substringToIndex(endIndex))] len:\(len)")
-    }
-
-}
