@@ -483,14 +483,19 @@ class XmlSAXParser {
     deinit{
         if context != nil {
             xmlFreeParserCtxt(context)
+            xmlCleanupParser()
         }
     }
     // 参考 : http://www.xmlsoft.org/examples/parse4.c
     func parse(filepath:String)
     {
-        let desc : UnsafeMutablePointer<FILE> = fopen(filepath, "r")
-        if desc == nil {
+        // 参考 : https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/ErrorHandling.html
+        guard let desc : UnsafeMutablePointer<FILE> = fopen(filepath, "r") else {
             return
+        }
+        // 遅延実行 swift 2 から使用できる。スコープを抜けると実行される。
+        defer {
+            fclose(desc)
         }
         res = fread(&chars, 1, 4, desc)
         if res >= 0 {
@@ -502,7 +507,6 @@ class XmlSAXParser {
                 }
             }
         }
-        fclose(desc)
     }
 }
 

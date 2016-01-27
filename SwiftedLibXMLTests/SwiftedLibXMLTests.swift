@@ -99,6 +99,7 @@ class SwiftedLibXMLTests: XCTestCase {
         let kmlPath = bundle.pathForResource("KML_Sample", ofType: "kml")
         kmlparser.parse(kmlPath!)
         
+        print("CustomHandler...")
         // CustomHandler テスト
         // テスト用カスタムSAX2Handler
         struct CustomXmlSAXHandler : HasSAX2Handler {
@@ -111,7 +112,28 @@ class SwiftedLibXMLTests: XCTestCase {
                 nb_attributes:CInt,
                 nb_defaulted:CInt,
                 attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>> ) {
-                print("CustomXMlSAParser called OnStartElementNs: [\(String.fromLIBXMLString(localname))]")
+                    print("CustomXMlSAParser called OnStartElementNs: [\(String.fromLIBXMLString(localname))]")
+                    if prefix != nil {
+                        print("prefix[\(String.fromLIBXMLString(prefix))]")
+                    }
+                    if uri != nil {
+                        print("uri[\(String.fromLIBXMLString(uri))]")
+                    }
+                    if namespaces != nil {
+                        if namespaces.memory != nil{
+                            print("namespaces[\(String.fromLIBXMLString(namespaces.memory))]")
+                        }
+                    }
+                    for attributeIndex:Int in 0..<Int(nb_attributes) {
+                        // [0]name,[1]?,[2]?,[3]value開始位置,[4]value終了位置
+                        let attributeNameIndex:Int = attributeIndex * 5
+                        let attributeValueIndex:Int = attributeNameIndex + 3
+                        let str = String.fromLIBXMLString(attributes[attributeValueIndex])
+                        let len = str.characters.count - String.fromLIBXMLString(attributes[attributeValueIndex+1]).characters.count
+                        let endIndex = str.startIndex.advancedBy(len)
+                        let attributeValue = str.substringToIndex(endIndex)
+                        print("attributes \(nb_attributes)/defaulted \(nb_defaulted) [\(String.fromLIBXMLString(attributes[attributeNameIndex]))]=[\(attributeValue))]")
+                    }
             }
             func OnEndElementNs(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) {
                 print("CustomXMlSAParser called OnEndElementNs: [\(String.fromLIBXMLString(localname))]")
