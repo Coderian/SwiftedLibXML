@@ -119,9 +119,14 @@ class SwiftedLibXMLTests: XCTestCase {
                     if uri != nil {
                         print("uri[\(String.fromLIBXMLString(uri))]")
                     }
-                    if namespaces != nil {
-                        if namespaces.memory != nil{
-                            print("namespaces[\(String.fromLIBXMLString(namespaces.memory))]")
+                    // これでいいのか不明...
+                    for namespaceIndex:Int in 0..<Int(nb_namespaces) {
+                        let namespaceFirstArgIndex:Int = namespaceIndex * 2
+                        if namespaces[namespaceFirstArgIndex] != nil {
+                                print("namespaces[\(namespaceIndex)][0]=[\(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex]))]")
+                        }
+                        if namespaces[namespaceFirstArgIndex+1] != nil {
+                                print("namespaces[\(namespaceIndex)][1]=[\(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex+1]))]")
                         }
                     }
                     for attributeIndex:Int in 0..<Int(nb_attributes) {
@@ -132,7 +137,7 @@ class SwiftedLibXMLTests: XCTestCase {
                         let len = str.characters.count - String.fromLIBXMLString(attributes[attributeValueIndex+1]).characters.count
                         let endIndex = str.startIndex.advancedBy(len)
                         let attributeValue = str.substringToIndex(endIndex)
-                        print("attributes \(nb_attributes)/defaulted \(nb_defaulted) [\(String.fromLIBXMLString(attributes[attributeNameIndex]))]=[\(attributeValue))]")
+                        print("attributes[\(attributeIndex)] [\(String.fromLIBXMLString(attributes[attributeNameIndex]))]=[\(attributeValue))]")
                     }
             }
             func OnEndElementNs(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) {
@@ -145,7 +150,7 @@ class SwiftedLibXMLTests: XCTestCase {
             }
         }
         let customParser: XmlSAXParser = XmlSAXParser(handled: CustomXmlSAXHandler())
-        customParser.parse(xmlPath!)
+        customParser.parse(kmlPath!)
     }
     
     func testPerformanceExample() {
