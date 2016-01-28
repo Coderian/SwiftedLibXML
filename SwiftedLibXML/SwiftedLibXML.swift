@@ -538,8 +538,8 @@ class XmlSAXParser {
             // これでいいのか不明...
             for namespaceIndex:Int in 0..<Int(nb_namespaces) {
                 let namespaceFirstArgIndex:Int = namespaceIndex * 2
-                if namespaces[namespaceFirstArgIndex] != nil {
-                }
+//                if namespaces[namespaceFirstArgIndex] != nil {
+//                }
                 if namespaces[namespaceFirstArgIndex+1] != nil {
                     convertedNamespaces.append(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex+1]))
                 }
