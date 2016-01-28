@@ -366,67 +366,36 @@ class XmlReader {
 }
 
 protocol HasSAX2Handler {
-    /*
-    void xmlSAX2StartElementNs		(void * ctx,
-    const xmlChar * localname,
-    const xmlChar * prefix,
-    const xmlChar * URI,
-    int nb_namespaces,
-    const xmlChar ** namespaces,
-    int nb_attributes,
-    int nb_defaulted,
-    const xmlChar ** attributes)
-    */
-    func OnStartElementNs(ctx: UnsafeMutablePointer<Void>,
-        localname:UnsafePointer<xmlChar>,
-        prefix: UnsafePointer<xmlChar>,
-        uri: UnsafePointer<xmlChar>,
-        nb_namespaces:CInt,
-        namespaces:UnsafeMutablePointer<UnsafePointer<xmlChar>>,
-        nb_attributes:CInt,
-        nb_defaulted:CInt,
-        attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>> )
-    /*
-    void xmlSAX2EndElementNs		(void * ctx,
-    const xmlChar * localname,
-    const xmlChar * prefix,
-    const xmlChar * URI)
-    */
-    func OnEndElementNs(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>)
-    /*
-    void xmlSAX2Characters		(void * ctx,
-    const xmlChar * ch,
-    int len)
-    */
-    func OnCharacters(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt)
+    func OnStartElementNs(context: Any?,
+        localname:String,
+        prefix: String?,
+        uri: String?,
+        namespaces:[String],
+        attributes:[String:String] )
+    func OnEndElementNs(context: Any?, localname: String, prefix: String?, uri: String?)
+    func OnCharacters(context: Any?, characters: String)
 }
 
-struct XmlSAXDefaultHandler : HasSAX2Handler {
-    func OnStartElementNs(ctx: UnsafeMutablePointer<Void>,
-        localname:UnsafePointer<xmlChar>,
-        prefix: UnsafePointer<xmlChar>,
-        uri: UnsafePointer<xmlChar>,
-        nb_namespaces:CInt,
-        namespaces:UnsafeMutablePointer<UnsafePointer<xmlChar>>,
-        nb_attributes:CInt,
-        nb_defaulted:CInt,
-        attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>> ) {
-        print("default func called OnStartElementNs: [\(String.fromLIBXMLString(localname))]")
-            
+struct XmlSAX2DefaultHandler : HasSAX2Handler {
+    func OnStartElementNs(context: Any?,
+        localname:String,
+        prefix: String?,
+        uri: String?,
+        namespaces:[String],
+        attributes:[String:String] ){
+        print("default func called OnStartElementNs: [\(localname)]")
     }
-    func OnEndElementNs(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) {
-        print("default func called OnEndElementNs: [\(String.fromLIBXMLString(localname))]")
+    func OnEndElementNs(context: Any?, localname: String, prefix: String?, uri: String?) {
+        print("default func called OnEndElementNs: [\(localname)]")
     }
-    func OnCharacters(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt){
-        let str = String.fromLIBXMLString(ch)
-        let endIndex = str.startIndex.advancedBy(Int(len))
-        print("default func called OnCharacters: [\(str.substringToIndex(endIndex))] len:\(len)")
+    func OnCharacters(context: Any?, characters: String){
+        print("default func called OnCharacters: [\(characters)]")
     }
 }
 
 // global scope...
 // !!!要注意!!! thread safe ではないです
-private var handler: HasSAX2Handler = XmlSAXDefaultHandler()
+private var handler: HasSAX2Handler = XmlSAX2DefaultHandler()
 
 class XmlSAXParser {
     private var context:xmlParserCtxtPtr = nil
@@ -435,6 +404,17 @@ class XmlSAXParser {
     private var res:Int = 0
     init(){
         saxHandler.initialized = XML_SAX2_MAGIC
+        /*
+        void xmlSAX2StartElementNs		(void * ctx,
+        const xmlChar * localname,
+        const xmlChar * prefix,
+        const xmlChar * URI,
+        int nb_namespaces,
+        const xmlChar ** namespaces,
+        int nb_attributes,
+        int nb_defaulted,
+        const xmlChar ** attributes)
+        */
         // closureかクラス外のfuncでしかできないとのエラーのためclosureから呼ぶようにしている
         saxHandler.startElementNs = {(ctx: UnsafeMutablePointer<Void>,
                                       localname:UnsafePointer<xmlChar>,
@@ -445,20 +425,96 @@ class XmlSAXParser {
                                       nb_attributes:CInt,
                                       nb_defaulted:CInt,
                                       attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>>) in
-            handler.OnStartElementNs(ctx, localname: localname, prefix: prefix, uri: uri, nb_namespaces: nb_namespaces, namespaces: namespaces, nb_attributes: nb_attributes, nb_defaulted: nb_defaulted, attributes: attributes)
+            let context:Any? = ctx
+            print("closure called OnStartElementNs: [\(String.fromLIBXMLString(localname))]")
+            var convertedPrefix:String?
+            if prefix != nil {
+                print("prefix[\(String.fromLIBXMLString(prefix))]")
+                convertedPrefix = String.fromLIBXMLString(prefix)
+            }
+            var convertedUri:String?
+            if uri != nil {
+                print("uri[\(String.fromLIBXMLString(uri))]")
+                convertedUri = String.fromLIBXMLString(uri)
+            }
+            var convertedNamespaces:[String] = []
+            // これでいいのか不明...
+            for namespaceIndex:Int in 0..<Int(nb_namespaces) {
+                let namespaceFirstArgIndex:Int = namespaceIndex * 2
+                if namespaces[namespaceFirstArgIndex] != nil {
+                    print("namespaces[\(namespaceIndex)][0]=[\(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex]))]")
+                }
+                if namespaces[namespaceFirstArgIndex+1] != nil {
+                    print("namespaces[\(namespaceIndex)][1]=[\(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex+1]))]")
+                    convertedNamespaces.append(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex+1]))
+                }
+            }
+            var convertedAttributes:[String:String] = [:]
+            for attributeIndex:Int in 0..<Int(nb_attributes) {
+                // [0]name,[1]?,[2]?,[3]value開始位置,[4]value終了位置
+                let attributeNameIndex:Int = attributeIndex * 5
+                let attributeValueIndex:Int = attributeNameIndex + 3
+                let str = String.fromLIBXMLString(attributes[attributeValueIndex])
+                let len = str.characters.count - String.fromLIBXMLString(attributes[attributeValueIndex+1]).characters.count
+                let endIndex = str.startIndex.advancedBy(len)
+                let attributeValue = str.substringToIndex(endIndex)
+                print("attributes[\(attributeIndex)] [\(String.fromLIBXMLString(attributes[attributeNameIndex]))]=[\(attributeValue))]")
+                convertedAttributes[String.fromLIBXMLString(attributes[attributeNameIndex])] = attributeValue
+            }
+            
+            handler.OnStartElementNs(context, localname: String.fromLIBXMLString(localname), prefix: convertedPrefix, uri: convertedUri, namespaces: convertedNamespaces, attributes: convertedAttributes)
+
         }
+        /*
+        void xmlSAX2EndElementNs		(void * ctx,
+        const xmlChar * localname,
+        const xmlChar * prefix,
+        const xmlChar * URI)
+        */
         // closureかクラス外のfuncでしかできないとのエラーのためclosureから呼ぶようにしている
         saxHandler.endElementNs = {(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) in
-            handler.OnEndElementNs(ctx, localname: localname, prefix: prefix, uri: uri)
+            print("closure called OnEndElementNs: [\(String.fromLIBXMLString(localname))]")
+            let context:Any? = ctx
+            var convertedPrefix:String?
+            if prefix != nil {
+                print("prefix[\(String.fromLIBXMLString(prefix))]")
+                convertedPrefix = String.fromLIBXMLString(prefix)
+            }
+            var convertedUri:String?
+            if uri != nil {
+                print("uri[\(String.fromLIBXMLString(uri))]")
+                convertedUri = String.fromLIBXMLString(uri)
+            }
+            handler.OnEndElementNs(context, localname: String.fromLIBXMLString(localname), prefix: convertedPrefix, uri: convertedUri)
         }
+        /*
+        void xmlSAX2Characters		(void * ctx,
+        const xmlChar * ch,
+        int len)
+        */
         // closureかクラス外のfuncでしかできないとのエラーのためclosureから呼ぶようにしている
         saxHandler.characters = {(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt) in
-            handler.OnCharacters(ctx, ch: ch, len: len)
+            let context:Any? = ctx
+            let str = String.fromLIBXMLString(ch)
+            let endIndex = str.startIndex.advancedBy(Int(len))
+            print("closure called OnCharacters: [\(str.substringToIndex(endIndex))] len:\(len)")
+            handler.OnCharacters(context, characters:str.substringToIndex(endIndex))
         }
     }
     init(handled : HasSAX2Handler){
         handler = handled
         saxHandler.initialized = XML_SAX2_MAGIC
+        /*
+        void xmlSAX2StartElementNs		(void * ctx,
+        const xmlChar * localname,
+        const xmlChar * prefix,
+        const xmlChar * URI,
+        int nb_namespaces,
+        const xmlChar ** namespaces,
+        int nb_attributes,
+        int nb_defaulted,
+        const xmlChar ** attributes)
+        */
         // closureかクラス外のfuncでしかできないとのエラーのためclosureから呼ぶようにしている
         saxHandler.startElementNs = {(ctx: UnsafeMutablePointer<Void>,
             localname:UnsafePointer<xmlChar>,
@@ -469,15 +525,70 @@ class XmlSAXParser {
             nb_attributes:CInt,
             nb_defaulted:CInt,
             attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>>) in
-            handler.OnStartElementNs(ctx, localname: localname, prefix: prefix, uri: uri, nb_namespaces: nb_namespaces, namespaces: namespaces, nb_attributes: nb_attributes, nb_defaulted: nb_defaulted, attributes: attributes)
+            let context:Any? = ctx
+            var convertedPrefix:String?
+            if prefix != nil {
+                convertedPrefix = String.fromLIBXMLString(prefix)
+            }
+            var convertedUri:String?
+            if uri != nil {
+                convertedUri = String.fromLIBXMLString(uri)
+            }
+            var convertedNamespaces:[String] = []
+            // これでいいのか不明...
+            for namespaceIndex:Int in 0..<Int(nb_namespaces) {
+                let namespaceFirstArgIndex:Int = namespaceIndex * 2
+                if namespaces[namespaceFirstArgIndex] != nil {
+                }
+                if namespaces[namespaceFirstArgIndex+1] != nil {
+                    convertedNamespaces.append(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex+1]))
+                }
+            }
+            var convertedAttributes:[String:String] = [:]
+            for attributeIndex:Int in 0..<Int(nb_attributes) {
+                // [0]name,[1]?,[2]?,[3]value開始位置,[4]value終了位置
+                let attributeNameIndex:Int = attributeIndex * 5
+                let attributeValueIndex:Int = attributeNameIndex + 3
+                let str = String.fromLIBXMLString(attributes[attributeValueIndex])
+                let len = str.characters.count - String.fromLIBXMLString(attributes[attributeValueIndex+1]).characters.count
+                let endIndex = str.startIndex.advancedBy(len)
+                let attributeValue = str.substringToIndex(endIndex)
+                convertedAttributes[String.fromLIBXMLString(attributes[attributeNameIndex])] = attributeValue
+            }
+            
+            handler.OnStartElementNs(context, localname: String.fromLIBXMLString(localname), prefix: convertedPrefix, uri: convertedUri, namespaces: convertedNamespaces, attributes: convertedAttributes)
+            
         }
+        /*
+        void xmlSAX2EndElementNs		(void * ctx,
+        const xmlChar * localname,
+        const xmlChar * prefix,
+        const xmlChar * URI)
+        */
         // closureかクラス外のfuncでしかできないとのエラーのためclosureから呼ぶようにしている
         saxHandler.endElementNs = {(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) in
-            handler.OnEndElementNs(ctx, localname: localname, prefix: prefix, uri: uri)
+            let context:Any? = ctx
+            var convertedPrefix:String?
+            if prefix != nil {
+                convertedPrefix = String.fromLIBXMLString(prefix)
+            }
+            var convertedUri:String?
+            if uri != nil {
+                convertedUri = String.fromLIBXMLString(uri)
+            }
+            handler.OnEndElementNs(context, localname: String.fromLIBXMLString(localname), prefix: convertedPrefix, uri: convertedUri)
         }
+        /*
+        void xmlSAX2Characters		(void * ctx,
+        const xmlChar * ch,
+        int len)
+        */
         // closureかクラス外のfuncでしかできないとのエラーのためclosureから呼ぶようにしている
         saxHandler.characters = {(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt) in
-            handler.OnCharacters(ctx, ch: ch, len: len)
+            let context:Any? = ctx
+            let str = String.fromLIBXMLString(ch)
+            let endIndex = str.startIndex.advancedBy(Int(len))
+            handler.OnCharacters(context, characters:str.substringToIndex(endIndex))
         }
     }
     deinit{

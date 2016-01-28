@@ -103,50 +103,27 @@ class SwiftedLibXMLTests: XCTestCase {
         // CustomHandler テスト
         // テスト用カスタムSAX2Handler
         struct CustomXmlSAXHandler : HasSAX2Handler {
-            func OnStartElementNs(ctx: UnsafeMutablePointer<Void>,
-                localname:UnsafePointer<xmlChar>,
-                prefix: UnsafePointer<xmlChar>,
-                uri: UnsafePointer<xmlChar>,
-                nb_namespaces:CInt,
-                namespaces:UnsafeMutablePointer<UnsafePointer<xmlChar>>,
-                nb_attributes:CInt,
-                nb_defaulted:CInt,
-                attributes:UnsafeMutablePointer<UnsafePointer<xmlChar>> ) {
-                    print("CustomXMlSAParser called OnStartElementNs: [\(String.fromLIBXMLString(localname))]")
+            func OnStartElementNs(context: Any?,
+                localname:String,
+                prefix: String?,
+                uri: String?,
+                namespaces:[String],
+                attributes:[String:String]) {
+                    print("CustomXMlSAParser called OnStartElementNs: [\(localname)]")
                     if prefix != nil {
-                        print("prefix[\(String.fromLIBXMLString(prefix))]")
+                        print("prefix[\(prefix)]")
                     }
                     if uri != nil {
-                        print("uri[\(String.fromLIBXMLString(uri))]")
+                        print("uri[\(uri)]")
                     }
-                    // これでいいのか不明...
-                    for namespaceIndex:Int in 0..<Int(nb_namespaces) {
-                        let namespaceFirstArgIndex:Int = namespaceIndex * 2
-                        if namespaces[namespaceFirstArgIndex] != nil {
-                                print("namespaces[\(namespaceIndex)][0]=[\(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex]))]")
-                        }
-                        if namespaces[namespaceFirstArgIndex+1] != nil {
-                                print("namespaces[\(namespaceIndex)][1]=[\(String.fromLIBXMLString(namespaces[namespaceFirstArgIndex+1]))]")
-                        }
-                    }
-                    for attributeIndex:Int in 0..<Int(nb_attributes) {
-                        // [0]name,[1]?,[2]?,[3]value開始位置,[4]value終了位置
-                        let attributeNameIndex:Int = attributeIndex * 5
-                        let attributeValueIndex:Int = attributeNameIndex + 3
-                        let str = String.fromLIBXMLString(attributes[attributeValueIndex])
-                        let len = str.characters.count - String.fromLIBXMLString(attributes[attributeValueIndex+1]).characters.count
-                        let endIndex = str.startIndex.advancedBy(len)
-                        let attributeValue = str.substringToIndex(endIndex)
-                        print("attributes[\(attributeIndex)] [\(String.fromLIBXMLString(attributes[attributeNameIndex]))]=[\(attributeValue))]")
-                    }
+                    print(namespaces)
+                    print(attributes)
             }
-            func OnEndElementNs(ctx: UnsafeMutablePointer<Void>, localname: UnsafePointer<xmlChar>, prefix: UnsafePointer<xmlChar>, uri: UnsafePointer<xmlChar>) {
-                print("CustomXMlSAParser called OnEndElementNs: [\(String.fromLIBXMLString(localname))]")
+            func OnEndElementNs(context: Any?, localname: String, prefix: String?, uri: String?) {
+                print("CustomXMlSAParser called OnEndElementNs: [\(localname)]")
             }
-            func OnCharacters(ctx: UnsafeMutablePointer<Void>, ch: UnsafePointer<xmlChar>, len: CInt){
-                let str = String.fromLIBXMLString(ch)
-                let endIndex = str.startIndex.advancedBy(Int(len))
-                print("CustomXMlSAParser called OnCharacters: [\(str.substringToIndex(endIndex))] len:\(len)")
+            func OnCharacters(context: Any?, characters: String){
+                print("CustomXMlSAParser called OnCharacters: [\(characters)]")
             }
         }
         let customParser: XmlSAXParser = XmlSAXParser(handled: CustomXmlSAXHandler())
