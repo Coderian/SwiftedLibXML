@@ -101,8 +101,11 @@ class SwiftedLibXMLTests: XCTestCase {
         
         print("CustomHandler...")
         // CustomHandler テスト
-        // テスト用カスタムSAX2Handler
-        struct CustomXmlSAXHandler : HasSAX2Handler {
+        // テスト用カスタムSAX2Handler,parse結果を取得するため参照型のclassを使用
+        class CustomXmlSAX2Handler : HasSAX2Handler {
+            private var elementname:String = ""
+            // parse結果取得用
+            var elementNames:[String] = []
             func OnStartElementNs(context: Any?,
                 localname:String,
                 prefix: String?,
@@ -118,16 +121,23 @@ class SwiftedLibXMLTests: XCTestCase {
                     }
                     print(namespaces)
                     print(attributes)
+                    elementname = localname
+                    elementNames.append(localname)
             }
             func OnEndElementNs(context: Any?, localname: String, prefix: String?, uri: String?) {
                 print("CustomXMlSAParser called OnEndElementNs: [\(localname)]")
             }
             func OnCharacters(context: Any?, characters: String){
                 print("CustomXMlSAParser called OnCharacters: [\(characters)]")
+                if(characters.characters.first != "\n"){
+                    print("\(elementname)=" + characters)
+                }
             }
         }
-        let customParser: XmlSAXParser = XmlSAXParser(handled: CustomXmlSAXHandler())
+        let handle = CustomXmlSAX2Handler()
+        let customParser: XmlSAXParser = XmlSAXParser(handled: handle)
         customParser.parse(kmlPath!)
+        print(handle.elementNames)
     }
     
     func testPerformanceExample() {
