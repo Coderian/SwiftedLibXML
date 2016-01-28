@@ -373,7 +373,7 @@ protocol HasSAX2Handler {
         namespaces:[String],
         attributes:[String:String] )
     func OnEndElementNs(context: Any?, localname: String, prefix: String?, uri: String?)
-    func OnCharacters(context: Any?, characters: String)
+    func OnCharacters(context: Any?, contents: String)
 }
 
 struct XmlSAX2DefaultHandler : HasSAX2Handler {
@@ -388,8 +388,8 @@ struct XmlSAX2DefaultHandler : HasSAX2Handler {
     func OnEndElementNs(context: Any?, localname: String, prefix: String?, uri: String?) {
         print("default func called OnEndElementNs: [\(localname)]")
     }
-    func OnCharacters(context: Any?, characters: String){
-        print("default func called OnCharacters: [\(characters)]")
+    func OnCharacters(context: Any?, contents: String){
+        print("default func called OnCharacters: [\(contents)]")
     }
 }
 
@@ -498,7 +498,7 @@ class XmlSAXParser {
             let str = String.fromLIBXMLString(ch)
             let endIndex = str.startIndex.advancedBy(Int(len))
             print("closure called OnCharacters: [\(str.substringToIndex(endIndex))] len:\(len)")
-            handler.OnCharacters(context, characters:str.substringToIndex(endIndex))
+            handler.OnCharacters(context, contents:str.substringToIndex(endIndex))
         }
     }
     init(handled : HasSAX2Handler){
@@ -588,7 +588,7 @@ class XmlSAXParser {
             let context:Any? = ctx
             let str = String.fromLIBXMLString(ch)
             let endIndex = str.startIndex.advancedBy(Int(len))
-            handler.OnCharacters(context, characters:str.substringToIndex(endIndex))
+            handler.OnCharacters(context, contents: str.substringToIndex(endIndex))
         }
     }
     deinit{

@@ -127,16 +127,17 @@ class SwiftedLibXMLTests: XCTestCase {
             func OnEndElementNs(context: Any?, localname: String, prefix: String?, uri: String?) {
                 print("CustomXMlSAParser called OnEndElementNs: [\(localname)]")
             }
-            func OnCharacters(context: Any?, characters: String){
-                print("CustomXMlSAParser called OnCharacters: [\(characters)]")
-                if(characters.characters.first != "\n"){
-                    print("\(elementname)=" + characters)
+            func OnCharacters(context: Any?, contents: String){
+                print("CustomXMlSAParser called OnCharacters")
+                if(contents.characters.first != "\n"){
+                    print("\(elementname)=" + contents)
                 }
             }
         }
         let handle = CustomXmlSAX2Handler()
         let customParser: XmlSAXParser = XmlSAXParser(handled: handle)
         customParser.parse(kmlPath!)
+        // parse結果取得
         print(handle.elementNames)
     }
     
