@@ -128,6 +128,7 @@ class SwiftedLibXMLTests: XCTestCase {
                 print("CustomXMlSAParser called OnEndElementNs: [\(localname)]")
             }
             func OnCharacters(context: Any?, contents: String){
+                // CAUTION: contentsが長い場合は複数回呼ばれる
                 print("CustomXMlSAParser called OnCharacters")
                 if(contents.characters.first != "\n"){
                     print("\(elementname)=" + contents)
