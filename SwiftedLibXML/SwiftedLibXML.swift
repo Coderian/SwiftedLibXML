@@ -17,10 +17,10 @@ func xmlSchemaValidityWarning(context: UnsafeMutablePointer<Void>, msg: UnsafePo
     
 }
 
-class XmlSchema {
+public class XmlSchema {
     private var schema:xmlSchemaPtr = nil
-    init(){}
-    init(path: String){
+    public init(){}
+    public init(path: String){
         let parser = XmlSchemaParser(path:path)
         self.schema = parser.parse()
     }
@@ -30,7 +30,7 @@ class XmlSchema {
         }
     }
     
-    func parse(path: String){
+    public func parse(path: String){
         let parser = XmlSchemaParser(path:path)
         if self.schema != nil {
             xmlSchemaFree(self.schema)
@@ -38,20 +38,20 @@ class XmlSchema {
         self.schema = parser.parse()
     }
     
-    class XmlSchemaParser {
+    public class XmlSchemaParser {
         private var context:xmlSchemaParserCtxtPtr = nil
-        init(path: String) {
+        public init(path: String) {
             self.context = xmlSchemaNewParserCtxt(path)
         }
         deinit {
             xmlSchemaFreeParserCtxt(self.context)
         }
-        func parse()-> xmlSchemaPtr {
+        public func parse()-> xmlSchemaPtr {
             return xmlSchemaParse(self.context)
         }
     }
     
-    class XmlSchemaValidater {
+    public class XmlSchemaValidater {
         private var context:xmlSchemaValidCtxtPtr = nil
         init(schema:XmlSchema){
             self.context = xmlSchemaNewValidCtxt(schema.schema)
@@ -59,12 +59,12 @@ class XmlSchema {
         deinit{
             xmlSchemaFreeValidCtxt(self.context)
         }
-        func validate(doc:XmlDoc) -> Bool {
+        public func validate(doc:XmlDoc) -> Bool {
             return xmlSchemaValidateDoc(self.context, doc.doc) == 0
         }
     }
     
-    func validate(doc:XmlDoc) -> Bool {
+    public func validate(doc:XmlDoc) -> Bool {
         let validater = XmlSchemaValidater(schema: self)
         return validater.validate(doc)
     }
@@ -78,48 +78,48 @@ extension String {
 }
 
 // TODO: impliment
-class XmlNameSpace {
+public class XmlNameSpace {
     private var namesapce: xmlNsPtr = nil
 }
 
-class XmlAttribute {
+public class XmlAttribute {
     private var attribute: xmlAttrPtr = nil
-    init ( attribute: xmlAttrPtr) {
+    public init ( attribute: xmlAttrPtr) {
         self.attribute = attribute
     }
     deinit{
         //        xmlFreeProp(self.attribute)
     }
-    var IsNil:Bool {
+    public var IsNil:Bool {
         get {
             return self.attribute == nil
         }
     }
-    var name : String {
+    public var name : String {
         get {
             return String.fromLIBXMLString(attribute.memory.name)
         }
     }
-    var value : String {
+    public var value : String {
         get {
             return String.fromLIBXMLString(attribute.memory.children.memory.content)
         }
     }
-    var type : xmlAttributeType {
+    public var type : xmlAttributeType {
         get {
             return attribute.memory.atype
         }
     }
-    func next() -> XmlAttribute {
+    public func next() -> XmlAttribute {
         return XmlAttribute(attribute: self.attribute.memory.next)
     }
-    func prev() -> XmlAttribute {
+    public func prev() -> XmlAttribute {
         return XmlAttribute(attribute: self.attribute.memory.prev)
     }
 }
 
 extension XmlAttribute : CustomStringConvertible {
-    var description : String {
+    public var description : String {
         get {
             return "type=" + self.type.description + ",name=" + self.name + ",value=" + self.value
         }
@@ -214,25 +214,25 @@ extension xmlElementType : CustomStringConvertible
     }
 }
 
-class XmlNode {
+public class XmlNode {
     private var node : xmlNodePtr = nil
     
-    init( node: xmlNodePtr){
+    public init( node: xmlNodePtr){
         self.node = node
     }
     // TODO:impliment
-    var namespace : XmlNameSpace {
+    public var namespace : XmlNameSpace {
         get {
             return XmlNameSpace()
         }
     }
-    var attribute : XmlAttribute {
+    public var attribute : XmlAttribute {
         get {
             let attr = XmlAttribute(attribute: self.node.memory.properties)
             return attr
         }
     }
-    var attributes : [String: String] {
+    public var attributes : [String: String] {
         get {
             var dictonary = [String: String]()
             var attr = attribute
@@ -243,45 +243,45 @@ class XmlNode {
             return dictonary
         }
     }
-    var name : String {
+    public var name : String {
         get {
             return String.fromLIBXMLString(self.node.memory.name)
         }
     }
-    var parent : XmlNode {
+    public var parent : XmlNode {
         get {
             return XmlNode(node: self.node.memory.parent)
         }
     }
-    var children : XmlNode {
+    public var children : XmlNode {
         get {
             return XmlNode(node: self.node.memory.children)
         }
     }
     
-    var elementType:xmlElementType {
+    public var elementType:xmlElementType {
         get {
             return self.node.memory.type
         }
     }
     
-    var IsNil:Bool {
+    public var IsNil:Bool {
         get {
             return self.node == nil
         }
     }
     
-    var IsBlankNode:Bool {
+    public var IsBlankNode:Bool {
         get{
             return xmlIsBlankNode(self.node) == 1
         }
     }
-    var IsText: Bool {
+    public var IsText: Bool {
         get {
             return xmlNodeIsText(self.node) == 1
         }
     }
-    var content:String {
+    public var content:String {
         get {
             return String.fromLIBXMLString(xmlNodeGetContent(self.node) )
         }
@@ -289,7 +289,7 @@ class XmlNode {
             xmlNodeSetContent(self.node, newValue)
         }
     }
-    var lang:String {
+    public var lang:String {
         get {
             return String.fromLIBXMLString(xmlNodeGetLang(self.node) )
         }
@@ -298,57 +298,57 @@ class XmlNode {
         }
     }
     
-    func next() ->XmlNode {
+    public func next() ->XmlNode {
         return XmlNode(node: self.node.memory.next)
     }
-    func prev() -> XmlNode {
+    public func prev() -> XmlNode {
         return XmlNode(node: self.node.memory.prev)
     }
-    func last() -> XmlNode {
+    public func last() -> XmlNode {
         return XmlNode(node: self.node.memory.last)
     }
     
-    func childElementCount() -> UInt {
+    public func childElementCount() -> UInt {
         return xmlChildElementCount(self.node)
     }
-    func firstElementChild() -> XmlNode {
+    public func firstElementChild() -> XmlNode {
         return XmlNode(node: xmlFirstElementChild(self.node))
     }
-    func lastElementChild() -> XmlNode {
+    public func lastElementChild() -> XmlNode {
         return XmlNode(node: xmlLastElementChild(self.node))
     }
-    func lastChlid() ->XmlNode {
+    public func lastChlid() ->XmlNode {
         return XmlNode(node: xmlGetLastChild(self.node))
     }
-    func nextElementSibling( node : XmlNode ) -> XmlNode {
+    public func nextElementSibling( node : XmlNode ) -> XmlNode {
         return XmlNode(node: xmlNextElementSibling(node.node))
     }
-    func previousElementSibling( node : XmlNode ) -> XmlNode {
+    public func previousElementSibling( node : XmlNode ) -> XmlNode {
         return XmlNode(node: xmlPreviousElementSibling(node.node))
     }
     
-    func addChild( child : XmlNode ){
+    public func addChild( child : XmlNode ){
         xmlAddChild(self.node,child.node)
     }
 }
 
 extension XmlNode : CustomStringConvertible {
-    var description : String {
+    public var description : String {
         get {
             return "name=" + self.name + " elementType=" + self.elementType.description
         }
     }
 }
 
-class XmlDoc {
+public class XmlDoc {
     private var doc:xmlDocPtr = nil
-    init(doc:xmlDocPtr){
+    public init(doc:xmlDocPtr){
         self.doc = doc
     }
     deinit{
         xmlFree(self.doc)
     }
-    var root: XmlNode {
+    public var root: XmlNode {
         get {
             return XmlNode(node: xmlDocGetRootElement(self.doc))
         }
@@ -358,14 +358,14 @@ class XmlDoc {
     }
 }
 
-class XmlReader {
-    class func read(filepath:String) -> XmlDoc
+public class XmlReader {
+    class public func read(filepath:String) -> XmlDoc
     {
         return XmlDoc(doc:xmlReadFile(filepath,nil,0))
     }
 }
 
-protocol HasSAX2Handler {
+public protocol HasSAX2Handler {
     func OnStartElementNs(context: Any?,
         localname:String,
         prefix: String?,
@@ -397,12 +397,12 @@ struct XmlSAX2DefaultHandler : HasSAX2Handler {
 // !!!要注意!!! thread safe ではないです
 private var handler: HasSAX2Handler = XmlSAX2DefaultHandler()
 
-class XmlSAXParser {
+public class XmlSAXParser {
     private var context:xmlParserCtxtPtr = nil
     private var saxHandler:xmlSAXHandler = xmlSAXHandler()
     private var chars   = Array<CChar>(count: Int(BUFSIZ), repeatedValue: 0)
     private var res:Int = 0
-    init(){
+    public init(){
         saxHandler.initialized = XML_SAX2_MAGIC
         /*
         void xmlSAX2StartElementNs		(void * ctx,
@@ -501,7 +501,7 @@ class XmlSAXParser {
             handler.OnCharacters(context, contents:str.substringToIndex(endIndex))
         }
     }
-    init(handled : HasSAX2Handler){
+    public init(handled : HasSAX2Handler){
         handler = handled
         saxHandler.initialized = XML_SAX2_MAGIC
         /*
@@ -598,7 +598,7 @@ class XmlSAXParser {
         }
     }
     // 参考 : http://www.xmlsoft.org/examples/parse4.c
-    func parse(filepath:String)
+    public func parse(filepath:String)
     {
         // 参考 : https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/ErrorHandling.html
         guard let desc : UnsafeMutablePointer<FILE> = fopen(filepath, "r") else {
