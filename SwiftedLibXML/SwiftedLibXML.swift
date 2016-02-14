@@ -22,6 +22,10 @@ public class XmlSchema {
     public init(){}
     public init(path: String){
         let parser = XmlSchemaParser(path:path)
+//        let errfunc:COpaquePointer = COpaquePointer(xmlSchemaValidityError)
+//        let p = UnsafeMutablePointer<(UnsafeMutablePointer<Void>,UnsafePointer<Int8>,CVaListPointer) -> Void>.alloc(1)
+//        p.initialize(xmlSchemaValidityError)
+//        xmlSchemaSetParserErrors(nil, COpaquePointer(p), nil, nil)
         self.schema = parser.parse()
     }
     deinit{
